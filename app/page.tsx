@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 
 type UploadResult = {
   success: boolean;
@@ -14,26 +15,13 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
 
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // ブラウザのデフォルト動作を防ぐ
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault(); // ブラウザのデフォルト動作を防ぐ
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    console.log("Drop");
-    e.preventDefault(); // ブラウザのデフォルト動作を防ぐ
-
-    console.log(e.dataTransfer);
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const droppedFile = e.dataTransfer.files[0];
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      const droppedFile = acceptedFiles[0];
       setFile(droppedFile);
       setFileName(droppedFile.name);
     }
-  };
+  }, []);
 
   const handleUpload = async () => {
     if (!file) return;
@@ -76,14 +64,26 @@ export default function Home() {
     }
   };
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+
   return (
-    <div>
+    <div className="container mx-auto p-4 max-w-md">
+      <h1 className="text-2xl font-bold mb-4">ファイル共有アプリ</h1>
+
       <div
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded-lg p-8 mb-4 text-center cursor-pointer transition-colors ${
+          isDragActive
+            ? "border-blue-500 bg-blue-50"
+            : "border-gray-300 hover:border-gray-400"
+        }`}
       >
-        <p>ここにファイルをドラッグ&ドロップしてください</p>
+        <input {...getInputProps()} />
+        <div className="flex flex-col items-center justify-center h-32">
+          <p className="text-gray-600">
+            {file ? fileName : "ここにファイルをドラッグ＆ドロップ"}
+          </p>
+        </div>
       </div>
 
       {file && (
@@ -98,12 +98,7 @@ export default function Home() {
       {uploadResult && uploadResult.success && uploadResult.url && (
         <div>
           <h3>共有URL:</h3>
-          <input
-            type="text"
-            readOnly
-            value={uploadResult.url}
-            onClick={(e) => (e.target as HTMLInputElement).select()}
-          />
+          <input type="text" readOnly value={uploadResult.url} />
           <button
             onClick={() => navigator.clipboard.writeText(uploadResult.url!)}
           >
