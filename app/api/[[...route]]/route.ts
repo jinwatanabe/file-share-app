@@ -30,6 +30,20 @@ app.post("/upload", async (c) => {
   expiresAt.setDate(expiresAt.getDate() + expirationDays);
 
   try {
+    console.log(getCloudflareContext().env);
+    const r2 = (getCloudflareContext().env as any).R2 as unknown as R2Bucket;
+    await r2.put(filePath, file);
+  } catch (r2Error) {
+    return c.json(
+      {
+        success: false,
+        message: `File upload failed: ${r2Error}`,
+      },
+      500
+    );
+  }
+
+  try {
     const db = drizzle(
       (getCloudflareContext().env as any).DB as unknown as D1Database
     );

@@ -9,11 +9,14 @@ type UploadResult = {
   expiresAt?: number;
 };
 
+type ExpirationOption = 1 | 3 | 5 | 7;
+
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [uploading, setUploading] = useState(false);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
+  const [expiration, setExpiration] = useState<ExpirationOption>(7);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {

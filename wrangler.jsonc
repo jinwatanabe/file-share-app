@@ -21,6 +21,12 @@
       "database_name": "file-share-app",
       "database_id": "22241865-2c1d-4be4-8683-5323b9489146"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "file-share-app"
+    }
   ]
 
   /**
