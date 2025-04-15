@@ -34,7 +34,7 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("expiration", "7");
+      formData.append("expiration", String(expiration));
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -92,7 +92,30 @@ export default function Home() {
       {file && (
         <div>
           <p>ファイル名: {fileName}</p>
-          <button onClick={handleUpload} disabled={uploading}>
+
+          <div className="my-4">
+            <label className="block mb-2">
+              有効期限:
+              <select
+                value={expiration}
+                onChange={(e) =>
+                  setExpiration(Number(e.target.value) as ExpirationOption)
+                }
+                className="ml-2 p-1 border rounded"
+              >
+                <option value={1}>1日</option>
+                <option value={3}>3日</option>
+                <option value={5}>5日</option>
+                <option value={7}>7日</option>
+              </select>
+            </label>
+          </div>
+
+          <button
+            onClick={handleUpload}
+            disabled={uploading}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
             {uploading ? "アップロード中..." : "アップロード"}
           </button>
         </div>
